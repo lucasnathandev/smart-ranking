@@ -1,11 +1,10 @@
-import { IsEmail, IsNotEmpty } from 'class-validator';
+import { IsNotEmpty } from 'class-validator';
 
 // Data Transfer Object - esse objeto vai trafegar por toda a nossa aplicação, por isso o nome.
 
-export class CriarJogadorDto {
+export class AtualizarJogadorDto {
   @IsNotEmpty()
   readonly nome: string;
-  @IsEmail()
-  readonly email: string;
+  @IsNotEmpty()
   readonly telefoneCelular: string;
 }

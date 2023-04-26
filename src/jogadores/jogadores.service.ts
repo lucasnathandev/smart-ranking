@@ -1,7 +1,8 @@
 import { PrismaService } from './../prisma/prisma.service';
-import { Jogadores } from '@prisma/client';
+import { Jogadores as Jogador } from '@prisma/client';
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { CriarJogadorDto } from './dtos/criarJogador.dto';
+import { AtualizarJogadorDto } from './dtos/atualizarJogador.dto';
 
 @Injectable()
 export class JogadoresService {
@@ -11,19 +12,32 @@ export class JogadoresService {
 
   private readonly logger = new Logger(JogadoresService.name);
 
-  async criarAtualizarJogador(criarJogadorDto: CriarJogadorDto): Promise<void> {
-    const { email } = criarJogadorDto;
-    const jogadorEncontrado = await this.buscarJogador(email);
-    if (jogadorEncontrado) {
-      this.atualizar(criarJogadorDto);
-      return;
-    }
-    this.criar(criarJogadorDto);
+  async criarJogador(criarJogadorDto: CriarJogadorDto): Promise<Jogador> {
+    const jogadorCriado = await this.criar(criarJogadorDto);
+    this.logger.log(jogadorCriado);
+    return jogadorCriado;
   }
 
-  async consultarTodosJogadores(): Promise<Jogadores[]> {
+  async atualizarJogador(
+    id: string,
+    atualizarJogadorDto: AtualizarJogadorDto,
+  ): Promise<void> {
     try {
-      const jogadores: Jogadores[] = await this.jogadorModel.findMany({
+      const jogadorEncontrado = await this.buscarJogador(id);
+      if (!jogadorEncontrado)
+        return (
+          new NotFoundException(`Jogador com id: ${id} não encontrado.`), null
+        );
+      await this.atualizar(id, atualizarJogadorDto);
+      this.logger.log(atualizarJogadorDto);
+    } catch (error) {
+      this.logger.log(JSON.stringify(error));
+    }
+  }
+
+  async consultarTodosJogadores(): Promise<Jogador[]> {
+    try {
+      const jogadores: Jogador[] = await this.jogadorModel.findMany({
         where: {
           isActive: true,
         },
@@ -34,28 +48,39 @@ export class JogadoresService {
     }
   }
 
-  async consultarJogadorPeloEmail(email: string): Promise<Jogadores> {
-    const jogadorEncontrado = await this.buscarJogador(email);
-    if (!jogadorEncontrado) return;
-    return jogadorEncontrado;
+  async consultarJogadorPeloId(id: string): Promise<Jogador> {
+    try {
+      const jogadorEncontrado = await this.buscarJogador(id);
+      if (!jogadorEncontrado) return;
+      return jogadorEncontrado;
+    } catch (error) {
+      this.logger.log(JSON.stringify(error));
+    }
   }
 
-  async deletarJogadorPeloEmail(email: string): Promise<void> {
-    const jogadorEncontrado = await this.buscarJogador(email);
+  async deletarJogadorPeloId(id: string): Promise<void> {
+    try {
+      const jogadorEncontrado = await this.buscarJogador(id);
 
-    if (!jogadorEncontrado) return;
-    await this.deletar(jogadorEncontrado);
+      if (!jogadorEncontrado)
+        return (
+          new NotFoundException(`Jogador com id: ${id} não encontrado.`), null
+        );
+      await this.deletar(jogadorEncontrado);
+    } catch (error) {
+      this.logger.log(JSON.stringify(error));
+    }
   }
 
   private async criar(
     criarJogadorDto: CriarJogadorDto,
-  ): Promise<Jogadores | any> {
+  ): Promise<Jogador | any> {
     try {
       const jogadorCriado = await this.jogadorModel.create({
         data: criarJogadorDto,
       });
       this.logger.log(JSON.stringify(jogadorCriado));
-      return await jogadorCriado;
+      return jogadorCriado;
     } catch (error) {
       this.logger.log(JSON.stringify(error));
       return { error };
@@ -63,14 +88,15 @@ export class JogadoresService {
   }
 
   private async atualizar(
-    criarJogadorDto: CriarJogadorDto,
-  ): Promise<Jogadores | any> {
+    id: string,
+    atualizarJogadorDto: AtualizarJogadorDto,
+  ): Promise<Jogador | any> {
     try {
       const jogadorAtualizado = await this.jogadorModel.update({
         where: {
-          email: criarJogadorDto.email,
+          id,
         },
-        data: criarJogadorDto,
+        data: atualizarJogadorDto,
       });
 
       this.logger.log(JSON.stringify(jogadorAtualizado));
@@ -82,11 +108,12 @@ export class JogadoresService {
     }
   }
 
-  private async deletar(jogadorEncontrado: Jogadores): Promise<void> {
+  private async deletar(jogadorEncontrado: Jogador): Promise<void> {
     try {
+      const { id } = jogadorEncontrado;
       const jogadorInativado = await this.jogadorModel.update({
         where: {
-          email: jogadorEncontrado.email,
+          id,
         },
         data: { isActive: false },
       });
@@ -105,11 +132,11 @@ export class JogadoresService {
     }
   }
 
-  private async buscarJogador(email: string): Promise<Jogadores | any> {
+  private async buscarJogador(id: string): Promise<Jogador | any> {
     try {
       const jogadorEncontrado = await this.jogadorModel.findFirst({
         where: {
-          email,
+          id,
           isActive: true,
         },
       });

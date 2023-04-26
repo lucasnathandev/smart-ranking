@@ -11,16 +11,34 @@ datasource db {
 }
 
 model Jogadores {
-  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  id              String      @id @default(auto()) @map("_id") @db.ObjectId
   nome            String
-  email           String   @unique
-  telefoneCelular String   @unique
+  email           String      @unique
+  telefoneCelular String
   ranking         String?
   posicaoRanking  Int?
-  isActive        Boolean  @default(true)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  isActive        Boolean     @default(true)
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  categoria       Categorias? @relation(fields: [categoriaId], references: [id])
+  categoriaId     String?     @db.ObjectId
 
   @@unique([email, telefoneCelular])
   @@map("jogadores")
+}
+
+model Categorias {
+  id        String      @id @default(auto()) @map("_id") @db.ObjectId
+  categoria String
+  descricao String
+  eventos   Evento[]
+  jogadores Jogadores[]
+
+  @@map("categorias")
+}
+
+type Evento {
+  nome     String
+  operacao String
+  valor    Int
 }

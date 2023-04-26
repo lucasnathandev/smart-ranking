@@ -5,6 +5,7 @@ import * as Joi from 'joi';
 import configuration from './config/configuration';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { PrismaService } from './prisma/prisma.service';
+import { CategoriasModule } from './categorias/categorias.module';
 
 @Module({
   imports: [
@@ -26,6 +27,8 @@ import { PrismaService } from './prisma/prisma.service';
     }),
 
     JogadoresModule,
+
+    CategoriasModule,
   ],
   controllers: [],
   providers: [PrismaService],
