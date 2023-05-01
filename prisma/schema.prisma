@@ -31,6 +31,7 @@ model Categorias {
   id        String      @id @default(auto()) @map("_id") @db.ObjectId
   categoria String
   descricao String
+  isActive  Boolean     @default(true)
   eventos   Evento[]
   jogadores Jogadores[]
 
