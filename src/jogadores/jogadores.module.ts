@@ -7,5 +7,6 @@ import { JogadoresService } from './jogadores.service';
   imports: [],
   controllers: [JogadoresController],
   providers: [JogadoresService, PrismaService],
+  exports: [JogadoresService],
 })
 export class JogadoresModule {}

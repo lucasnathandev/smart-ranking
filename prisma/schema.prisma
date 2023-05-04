@@ -18,10 +18,14 @@ model Jogadores {
   ranking         String?
   posicaoRanking  Int?
   isActive        Boolean     @default(true)
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
   categoria       Categorias? @relation(fields: [categoriaId], references: [id])
   categoriaId     String?     @db.ObjectId
+  desafios        Desafios[]  @relation(fields: [desafioIds], references: [id])
+  desafioIds      String[]    @db.ObjectId
+  partidas        Partidas[]  @relation(fields: [partidasIds], references: [id])
+  partidasIds     String[]    @db.ObjectId
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
 
   @@unique([email, telefoneCelular])
   @@map("jogadores")
@@ -34,8 +38,40 @@ model Categorias {
   isActive  Boolean     @default(true)
   eventos   Evento[]
   jogadores Jogadores[]
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
 
   @@map("categorias")
+}
+
+model Desafios {
+  id                  String      @id @default(auto()) @map("_id") @db.ObjectId
+  dataHoraDesafio     DateTime
+  status              String
+  dataHoraSolicitacao DateTime?
+  dataHoraResposta    DateTime?
+  solicitante         String      @db.ObjectId
+  jogadores           Jogadores[] @relation(fields: [jogadoresIds], references: [id])
+  jogadoresIds        String[]    @db.ObjectId
+  partida             String
+  createdAt           DateTime    @default(now())
+  updatedAt           DateTime    @updatedAt
+
+  @@map("desafios")
+}
+
+model Partidas {
+  id           String      @id @default(auto()) @map("_id") @db.ObjectId
+  categoria    String
+  jogadores    Jogadores[] @relation(fields: [jogadoresIds], references: [id])
+  jogadoresIds String[]    @db.ObjectId
+  def          String      @db.ObjectId
+  resultado    String[]
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  @@unique([categoria])
+  @@map("partidas")
 }
 
 type Evento {

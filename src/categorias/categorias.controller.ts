@@ -41,10 +41,14 @@ export class CategoriasController {
   async atualizarCategoria(
     @Param('id') id: string,
     @Body() atualizarCategoriaDto: AtualizarCategoriaDto,
-  ): Promise<Categoria> {
-    return await this.categoriaService.atualizarCategoria(
-      id,
-      atualizarCategoriaDto,
-    );
+  ): Promise<void> {
+    await this.categoriaService.atualizarCategoria(id, atualizarCategoriaDto);
+  }
+
+  @Post('/:id/jogadores/:idJogador')
+  async atribuirCategoriaJogador(
+    @Param() params: { id: string; idJogador: string },
+  ): Promise<void> {
+    return await this.categoriaService.atribuirCategoriaJogador(params);
   }
 }

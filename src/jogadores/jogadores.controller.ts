@@ -1,3 +1,4 @@
+import { AtribuirCategoriaDto } from './dtos/atribuir-categoria.dto';
 import {
   Controller,
   Post,
@@ -9,11 +10,11 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { CriarJogadorDto } from './dtos/criarJogador.dto';
+import { CriarJogadorDto } from './dtos/criar-jogador.dto';
 import { JogadoresService } from './jogadores.service';
 import { Jogadores as Jogador } from '@prisma/client';
-import { JogadoresValidacaoParametrosPipe } from './pipes/jogadores-validacao-parametros.pipe';
-import { AtualizarJogadorDto } from './dtos/atualizarJogador.dto';
+import { ValidacaoParametrosPipe } from './pipes/jogadores-validacao-parametros.pipe';
+import { AtualizarJogadorDto } from './dtos/atualizar-jogador.dto';
 
 @Controller('api/v1/jogadores')
 export class JogadoresController {
@@ -30,8 +31,9 @@ export class JogadoresController {
   @Patch('/:id')
   @UsePipes(ValidationPipe)
   async atualizarJogador(
-    @Param('id', JogadoresValidacaoParametrosPipe) id: string,
-    @Body() atualizarJogadorDto: AtualizarJogadorDto,
+    @Param('id', ValidacaoParametrosPipe) id: string,
+    @Body()
+    atualizarJogadorDto: AtualizarJogadorDto | AtribuirCategoriaDto,
   ): Promise<void> {
     this.jogadoresService.atualizarJogador(id, atualizarJogadorDto);
   }
@@ -43,14 +45,14 @@ export class JogadoresController {
 
   @Get('/:id')
   async consultarJogadorPeloId(
-    @Param('id', JogadoresValidacaoParametrosPipe) id: string,
+    @Param('id', ValidacaoParametrosPipe) id: string,
   ): Promise<Jogador> {
     return await this.jogadoresService.consultarJogadorPeloId(id);
   }
 
   @Delete('/:id')
   async deletarJogador(
-    @Param('id', JogadoresValidacaoParametrosPipe) id: string,
+    @Param('id', ValidacaoParametrosPipe) id: string,
   ): Promise<void> {
     this.jogadoresService.deletarJogadorPeloId(id);
   }

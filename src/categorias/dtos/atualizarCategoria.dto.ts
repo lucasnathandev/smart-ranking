@@ -1,7 +1,11 @@
-import { IsString, IsNotEmpty } from 'class-validator';
+import { Evento } from '@prisma/client';
+import { IsString, IsOptional, ArrayMinSize } from 'class-validator';
 
 export class AtualizarCategoriaDto {
-  @IsNotEmpty()
   @IsString()
-  readonly categoria: string;
+  @IsOptional()
+  descricao: string;
+
+  @ArrayMinSize(1)
+  eventos: Array<Evento>;
 }

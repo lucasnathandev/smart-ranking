@@ -1,4 +1,4 @@
-import { IsNotEmpty } from 'class-validator';
+import { IsNotEmpty, IsOptional } from 'class-validator';
 
 // Data Transfer Object - esse objeto vai trafegar por toda a nossa aplicação, por isso o nome.
 

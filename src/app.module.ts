@@ -6,6 +6,7 @@ import configuration from './config/configuration';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { PrismaService } from './prisma/prisma.service';
 import { CategoriasModule } from './categorias/categorias.module';
+import { DesafiosModule } from './desafios/desafios.module';
 
 @Module({
   imports: [
@@ -29,6 +30,8 @@ import { CategoriasModule } from './categorias/categorias.module';
     JogadoresModule,
 
     CategoriasModule,
+
+    DesafiosModule,
   ],
   controllers: [],
   providers: [PrismaService],
