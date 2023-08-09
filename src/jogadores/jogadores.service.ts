@@ -1,9 +1,9 @@
-import { PrismaService } from './../prisma/prisma.service';
-import { Jogadores as Jogador } from '@prisma/client';
-import { Injectable, Logger, NotFoundException } from '@nestjs/common';
-import { CriarJogadorDto } from './dtos/criar-jogador.dto';
-import { AtualizarJogadorDto } from './dtos/atualizar-jogador.dto';
-import { AtribuirCategoriaDto } from './dtos/atribuir-categoria.dto';
+import { PrismaService } from "./../prisma/prisma.service";
+import { Jogadores as Jogador } from "@prisma/client";
+import { Injectable, Logger, NotFoundException } from "@nestjs/common";
+import { CriarJogadorDto } from "./dtos/criar-jogador.dto";
+import { AtualizarJogadorDto } from "./dtos/atualizar-jogador.dto";
+import { AtribuirCategoriaDto } from "./dtos/atribuir-categoria.dto";
 
 @Injectable()
 export class JogadoresService {
@@ -21,7 +21,7 @@ export class JogadoresService {
 
   async atualizarJogador(
     id: string,
-    atualizarJogadorDto: AtualizarJogadorDto | AtribuirCategoriaDto,
+    atualizarJogadorDto: AtualizarJogadorDto | AtribuirCategoriaDto
   ): Promise<void> {
     try {
       const jogadorEncontrado = await this.buscarJogador(id);
@@ -42,6 +42,10 @@ export class JogadoresService {
         where: {
           isActive: true,
         },
+        include: {
+          desafios: true,
+          desafiosSolicitados: true,
+        },
       });
       return jogadores;
     } catch (error) {
@@ -52,6 +56,7 @@ export class JogadoresService {
   async consultarJogadorPeloId(id: string): Promise<Jogador> {
     try {
       const jogadorEncontrado = await this.buscarJogador(id);
+
       if (!jogadorEncontrado) return;
       return jogadorEncontrado;
     } catch (error) {
@@ -74,7 +79,7 @@ export class JogadoresService {
   }
 
   private async criar(
-    criarJogadorDto: CriarJogadorDto,
+    criarJogadorDto: CriarJogadorDto
   ): Promise<Jogador | any> {
     try {
       const jogadorCriado = await this.jogadorModel.create({
@@ -90,7 +95,7 @@ export class JogadoresService {
 
   private async atualizar(
     id: string,
-    atualizarJogadorDto: AtualizarJogadorDto | AtribuirCategoriaDto,
+    atualizarJogadorDto: AtualizarJogadorDto | AtribuirCategoriaDto
   ): Promise<Jogador | any> {
     try {
       const jogadorAtualizado = await this.jogadorModel.update({
@@ -121,9 +126,7 @@ export class JogadoresService {
 
       if (!jogadorInativado) {
         throw new NotFoundException(
-          'Jogador com email: ' +
-            jogadorEncontrado.email +
-            'não foi encontrado',
+          "Jogador com email: " + jogadorEncontrado.email + "não foi encontrado"
         );
       }
 
@@ -139,6 +142,10 @@ export class JogadoresService {
         where: {
           id,
           isActive: true,
+        },
+        include: {
+          desafios: true,
+          desafiosSolicitados: true,
         },
       });
 

@@ -10,22 +10,35 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum DesafioStatus {
+  PENDENTE
+  REALIZADO
+  ACEITO
+  NEGADO
+  CANCELADO
+}
+
+type Resultado {
+  set String
+}
+
 model Jogadores {
-  id              String      @id @default(auto()) @map("_id") @db.ObjectId
-  nome            String
-  email           String      @unique
-  telefoneCelular String
-  ranking         String?
-  posicaoRanking  Int?
-  isActive        Boolean     @default(true)
-  categoria       Categorias? @relation(fields: [categoriaId], references: [id])
-  categoriaId     String?     @db.ObjectId
-  desafios        Desafios[]  @relation(fields: [desafioIds], references: [id])
-  desafioIds      String[]    @db.ObjectId
-  partidas        Partidas[]  @relation(fields: [partidasIds], references: [id])
-  partidasIds     String[]    @db.ObjectId
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
+  id                  String      @id @default(auto()) @map("_id") @db.ObjectId
+  nome                String
+  email               String      @unique
+  telefoneCelular     String
+  ranking             String?
+  posicaoRanking      Int?
+  isActive            Boolean     @default(true)
+  categoria           Categorias? @relation(fields: [categoriaId], references: [id])
+  categoriaId         String?     @db.ObjectId
+  desafios            Desafios[]  @relation("jogadoresDesafios", fields: [desafioIds], references: [id])
+  desafioIds          String[]    @db.ObjectId
+  desafiosSolicitados Desafios[]  @relation("solicitanteDesafios")
+  partidas            Partidas[]  @relation(fields: [partidasIds], references: [id])
+  partidasIds         String[]    @db.ObjectId
+  createdAt           DateTime    @default(now())
+  updatedAt           DateTime    @updatedAt
 
   @@unique([email, telefoneCelular])
   @@map("jogadores")
@@ -38,39 +51,46 @@ model Categorias {
   isActive  Boolean     @default(true)
   eventos   Evento[]
   jogadores Jogadores[]
+  desafios  Desafios[]
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
+  Partidas  Partidas[]
 
   @@map("categorias")
 }
 
 model Desafios {
-  id                  String      @id @default(auto()) @map("_id") @db.ObjectId
+  id                  String        @id @default(auto()) @map("_id") @db.ObjectId
   dataHoraDesafio     DateTime
-  status              String
-  dataHoraSolicitacao DateTime?
+  dataHoraSolicitacao DateTime?     @default(now())
   dataHoraResposta    DateTime?
-  solicitante         String      @db.ObjectId
-  jogadores           Jogadores[] @relation(fields: [jogadoresIds], references: [id])
-  jogadoresIds        String[]    @db.ObjectId
-  partida             String
-  createdAt           DateTime    @default(now())
-  updatedAt           DateTime    @updatedAt
+  solicitante         Jogadores     @relation("solicitanteDesafios", fields: [solicitanteId], references: [id])
+  solicitanteId       String        @db.ObjectId
+  jogadores           Jogadores[]   @relation("jogadoresDesafios", fields: [jogadoresIds], references: [id])
+  jogadoresIds        String[]      @db.ObjectId
+  categoria           Categorias    @relation(fields: [categoriaId], references: [id])
+  categoriaId         String        @db.ObjectId
+  status              DesafioStatus @default(PENDENTE)
+  partida             Partidas?     @relation(fields: [partidasId], references: [id])
+  partidasId          String?       @db.ObjectId
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @updatedAt
 
   @@map("desafios")
 }
 
 model Partidas {
   id           String      @id @default(auto()) @map("_id") @db.ObjectId
-  categoria    String
+  categoria    Categorias  @relation(fields: [categoriasId], references: [id])
+  categoriasId String      @db.ObjectId
   jogadores    Jogadores[] @relation(fields: [jogadoresIds], references: [id])
   jogadoresIds String[]    @db.ObjectId
   def          String      @db.ObjectId
-  resultado    String[]
+  resultado    Resultado[]
+  desafios     Desafios[]
   createdAt    DateTime    @default(now())
   updatedAt    DateTime    @updatedAt
 
-  @@unique([categoria])
   @@map("partidas")
 }
 

@@ -1,4 +1,9 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { CriarDesafioDto } from './criar-desafio.dto';
+import { DesafioStatus } from "@prisma/client";
+import { IsOptional } from "class-validator";
 
-export class AtualizarDesafioDto extends PartialType(CriarDesafioDto) {}
+export class AtualizarDesafioDto {
+  @IsOptional()
+  status: DesafioStatus;
+  @IsOptional()
+  dataHoraDesafio?: string;
+}

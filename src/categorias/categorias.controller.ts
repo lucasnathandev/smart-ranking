@@ -1,4 +1,4 @@
-import { AtualizarCategoriaDto } from './dtos/atualizarCategoria.dto';
+import { AtualizarCategoriaDto } from "./dtos/atualizarCategoria.dto";
 import {
   Body,
   Param,
@@ -8,12 +8,12 @@ import {
   Patch,
   UsePipes,
   ValidationPipe,
-} from '@nestjs/common';
-import { CriarCategoriaDto } from './dtos/criarCategoria.dto';
-import { Categorias as Categoria } from '@prisma/client';
-import { CategoriasService } from './categorias.service';
+} from "@nestjs/common";
+import { CriarCategoriaDto } from "./dtos/criarCategoria.dto";
+import { Categorias as Categoria } from "@prisma/client";
+import { CategoriasService } from "./categorias.service";
 
-@Controller('api/v1/categorias')
+@Controller("api/v1/categorias")
 export class CategoriasController {
   constructor(private readonly categoriaService: CategoriasService) {}
 
@@ -22,32 +22,32 @@ export class CategoriasController {
     return this.categoriaService.consultarTodasCategorias();
   }
 
-  @Get('/:id')
+  @Get("/:id")
   @UsePipes(ValidationPipe)
-  async buscarCategoriaPeloId(@Param('id') id: string): Promise<Categoria> {
+  async buscarCategoriaPeloId(@Param("id") id: string): Promise<Categoria> {
     return this.categoriaService.consultarCategoriaPeloId(id);
   }
 
   @Post()
   @UsePipes(ValidationPipe)
   async criarCategoria(
-    @Body() criarCategoriaDto: CriarCategoriaDto,
+    @Body() criarCategoriaDto: CriarCategoriaDto
   ): Promise<Categoria> {
     return await this.categoriaService.criarCategoria(criarCategoriaDto);
   }
 
-  @Patch('/:id')
+  @Patch("/:id")
   @UsePipes(ValidationPipe)
   async atualizarCategoria(
-    @Param('id') id: string,
-    @Body() atualizarCategoriaDto: AtualizarCategoriaDto,
+    @Param("id") id: string,
+    @Body() atualizarCategoriaDto: AtualizarCategoriaDto
   ): Promise<void> {
     await this.categoriaService.atualizarCategoria(id, atualizarCategoriaDto);
   }
 
-  @Post('/:id/jogadores/:idJogador')
+  @Post("/:id/jogadores/:idJogador")
   async atribuirCategoriaJogador(
-    @Param() params: { id: string; idJogador: string },
+    @Param() params: { id: string; idJogador: string }
   ): Promise<void> {
     return await this.categoriaService.atribuirCategoriaJogador(params);
   }

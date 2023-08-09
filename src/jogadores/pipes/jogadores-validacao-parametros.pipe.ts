@@ -3,14 +3,14 @@ import {
   ArgumentMetadata,
   Logger,
   BadRequestException,
-} from '@nestjs/common';
+} from "@nestjs/common";
 
 export class ValidacaoParametrosPipe implements PipeTransform {
   private logger = new Logger();
   transform(value: any, metadata: ArgumentMetadata) {
     if (!value) {
       throw new BadRequestException(
-        `Não foi passado nenhum valor no parâmetro ${metadata.data}`,
+        `Não foi passado nenhum valor no parâmetro ${metadata.data}`
       );
       return;
     }

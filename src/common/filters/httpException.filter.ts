@@ -5,7 +5,7 @@ import {
   HttpException,
   HttpStatus,
   Logger,
-} from '@nestjs/common';
+} from "@nestjs/common";
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
@@ -20,12 +20,12 @@ export class AllExceptionsFilter implements ExceptionFilter {
       exception instanceof HttpException
         ? exception.getStatus()
         : HttpStatus.INTERNAL_SERVER_ERROR;
-
+    this.logger.log("Exception" + exception);
     const message =
       exception instanceof HttpException ? exception.getResponse() : exception;
 
     this.logger.error(
-      `Http Status: ${status} Error Message: ${JSON.stringify(message)}`,
+      `Http Status: ${status} Error Message: ${JSON.stringify(message)}`
     );
 
     response.status(status).json({

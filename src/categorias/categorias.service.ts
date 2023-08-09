@@ -1,23 +1,23 @@
-import { JogadoresService } from './../jogadores/jogadores.service';
-import { AtualizarCategoriaDto } from './dtos/atualizarCategoria.dto';
-import { PrismaService } from './../prisma/prisma.service';
+import { JogadoresService } from "./../jogadores/jogadores.service";
+import { AtualizarCategoriaDto } from "./dtos/atualizarCategoria.dto";
+import { PrismaService } from "./../prisma/prisma.service";
 import {
   Injectable,
   Logger,
   NotFoundException,
   BadRequestException,
-} from '@nestjs/common';
-import { CriarCategoriaDto } from './dtos/criarCategoria.dto';
-import { Categorias as Categoria, Jogadores as Jogador } from '@prisma/client';
+} from "@nestjs/common";
+import { CriarCategoriaDto } from "./dtos/criarCategoria.dto";
+import { Categorias as Categoria, Jogadores as Jogador } from "@prisma/client";
 
 @Injectable()
 export class CategoriasService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly jogadoresService: JogadoresService,
+    private readonly jogadoresService: JogadoresService
   ) {}
 
-  private readonly logger = new Logger('Categoria');
+  private readonly logger = new Logger("Categoria");
   private readonly categoriasModel = this.prisma.categorias;
 
   async consultarTodasCategorias(): Promise<Categoria[]> {
@@ -46,7 +46,7 @@ export class CategoriasService {
       });
 
       if (!encontrado) {
-        throw new NotFoundException('Categoria não encontrada');
+        throw new NotFoundException("Categoria não encontrada");
       }
 
       return encontrado;
@@ -56,7 +56,7 @@ export class CategoriasService {
   }
 
   async criarCategoria(
-    criarCategoriaDto: CriarCategoriaDto,
+    criarCategoriaDto: CriarCategoriaDto
   ): Promise<Categoria | any> {
     try {
       const { categoria } = criarCategoriaDto;
@@ -67,7 +67,7 @@ export class CategoriasService {
       });
       if (categoriaExiste) {
         throw new BadRequestException(
-          `Categoria ${categoria} já foi cadastrada.`,
+          `Categoria ${categoria} já foi cadastrada.`
         );
       }
       const criado = await this.categoriasModel.create({
@@ -82,7 +82,7 @@ export class CategoriasService {
 
   async atualizarCategoria(
     id: string,
-    atualizarCategoriaDto: AtualizarCategoriaDto,
+    atualizarCategoriaDto: AtualizarCategoriaDto
   ): Promise<void | any> {
     try {
       const atualizado = await this.categoriasModel.update({
@@ -92,7 +92,7 @@ export class CategoriasService {
         data: atualizarCategoriaDto,
       });
       if (!atualizado) {
-        throw new BadRequestException('Categoria não encontrada.');
+        throw new BadRequestException("Categoria não encontrada.");
       }
       this.logger.log(atualizado);
 
@@ -118,7 +118,7 @@ export class CategoriasService {
         },
       });
       if (!encontrado) {
-        throw new BadRequestException('Categoria não encontrada.');
+        throw new BadRequestException("Categoria não encontrada.");
       }
 
       const jogadorCadastrado = await this.categoriasModel.findFirst({
@@ -134,9 +134,9 @@ export class CategoriasService {
 
       if (jogadorCadastrado) {
         throw new BadRequestException(
-          'Jogador já está cadastrado na categoria ' +
+          "Jogador já está cadastrado na categoria " +
             jogadorCadastrado.categoria +
-            '.',
+            "."
         );
       }
 
@@ -144,7 +144,7 @@ export class CategoriasService {
         await this.jogadoresService.consultarJogadorPeloId(idJogador);
 
       if (!jogador) {
-        throw new BadRequestException('Jogador não encontrado.');
+        throw new BadRequestException("Jogador não encontrado.");
       }
 
       await this.jogadoresService.atualizarJogador(jogador.id, {
